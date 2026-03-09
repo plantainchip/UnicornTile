@@ -1,9 +1,10 @@
 import kaplay from "kaplay";
 import "kaplay/global"; // uncomment if you want to use without the k. prefix
+import levelselection from "./level-selection"
 
 kaplay({
     width: 160,
-    height: 144,
+    height: 176,
     scale: 4,
 })
 setBackground(222, 226, 228)
@@ -13,24 +14,46 @@ debug.inspect = false
 // loadRoot("./"); // A good idea for Itch.io publishing later
 loadSprite("unicorn", "/sprites/unicorn-piece.png");
 loadSprite("lightning", "/sprites/lightning-piece.png");
+loadSprite("hazard", "/sprites/hazard-piece.png");
+loadSprite("fly", "/sprites/fly-piece.png");
+loadSprite("star", "/sprites/star-piece.png");
 loadSprite("wtile", "/sprites/w-tile.png");
 loadSprite("atile", "/sprites/a-tile.png");
 loadSprite("stile", "/sprites/s-tile.png");
 loadSprite("dtile", "/sprites/d-tile.png");
 loadSprite("4x4", "/sprites/4x4board.png");
+loadSprite("6x6", "/sprites/6x6board.png");
+loadSprite("title_screen", "/sprites/title_screen.png");
 
 
+
+scene("levelselection",levelselection);
+
+
+scene("start",()=>{
+    add([sprite("title_screen")])
+    onKeyPress((key) => {
+        go("levelselection" );
+    })
+})
+
+onLoad(() => go("start"))
 
 add([
     sprite("4x4"),
-    pos(center()),
-    anchor("center")
+    pos(44,17),
 ])
+
+// add([
+//     sprite("6x6"),
+//     pos(28,12)
+    
+// ])
 
 const unicorn = add([
     sprite("unicorn"),
     pos(48, 34),
-    z(1),
+    z(2),
     area({shape: new Rect(vec2(2,6), 10, 10),isSensor: true }),
     "unicorn"
 ]);
@@ -39,11 +62,26 @@ let unicornPrevPositionsX = [unicorn.pos.x] //saving x coordinate
 let unicornPrevPositionsY = [unicorn.pos.y] //saving x coordinate
 let unicornMovesCounter = 0
 
-const lightning = add([
-    sprite("lightning"),
-    pos(80, 37),
-    z(1)
+// const lightning = add([
+//     sprite("lightning"),
+//     pos(80, 37),
+//     z(1)
+// ]);
+const star = add([
+    sprite("star"),
+    pos(96, 37),
+    z(1),
+    "star"
 ]);
+
+const fly = add([
+    sprite("fly"),
+    pos(80, 37),
+    z(1),
+    "fly"
+]);
+
+
 
 function wTile() {
     const wTile = add([
@@ -87,13 +125,14 @@ function dTile() {
 let willUnicornMove = true;
 
 onKeyPress("w", () => {
-    // unicorn.moveTo(vec2(unicorn.pos.x,unicorn.pos.y-20))
     for(let i=unicornMovesCounter;i>=0;i--){
-        console.log("step "+ i + ":" + unicornPrevPositionsX[i] + " " +unicornPrevPositionsY[i])
-        if(unicornPrevPositionsX[i] == unicorn.pos.x && unicornPrevPositionsY[i]== unicorn.pos.y-16){
-            // tween(unicorn.pos, vec2(unicorn.pos.x, unicorn.pos.y), 0.2, (p) => unicorn.pos = p)
+        if(unicornPrevPositionsX[i] == unicorn.pos.x && unicornPrevPositionsY[i]==unicorn.pos.y-16){
             willUnicornMove = false
         }
+    }
+    // if unicorn go out of bounds
+    if(unicorn.pos.y-16 < 34){
+        willUnicornMove = false
     }
     if(willUnicornMove){
         wTile()
@@ -106,17 +145,17 @@ onKeyPress("w", () => {
         shake(0.5)
         willUnicornMove = true;
     }
-    
 });
 
 onKeyPress("a", () => {
-    // unicorn.moveTo(vec2(unicorn.pos.x-20,unicorn.pos.y))
     for(let i=unicornMovesCounter;i>=0;i--){
-        console.log("step "+ i + ":" + unicornPrevPositionsX[i] + " " +unicornPrevPositionsY[i])
         if(unicornPrevPositionsX[i] == unicorn.pos.x-16 && unicornPrevPositionsY[i]== unicorn.pos.y){
-            // tween(unicorn.pos, vec2(unicorn.pos.x, unicorn.pos.y), 0.2, (p) => unicorn.pos = p)
             willUnicornMove = false
         }
+    }
+    // if unicorn go out of bounds
+    if(unicorn.pos.x-16 < 48){
+        willUnicornMove = false
     }
     if(willUnicornMove){
         aTile()
@@ -133,11 +172,13 @@ onKeyPress("a", () => {
 
 onKeyPress("s", () => {
     for(let i=unicornMovesCounter;i>=0;i--){
-        console.log("step "+ i + ":" + unicornPrevPositionsX[i] + " " +unicornPrevPositionsY[i])
         if(unicornPrevPositionsX[i] == unicorn.pos.x && unicornPrevPositionsY[i]== unicorn.pos.y+16){
-            // tween(unicorn.pos, vec2(unicorn.pos.x, unicorn.pos.y), 0.2, (p) => unicorn.pos = p)
             willUnicornMove = false
         }
+    }
+    // if unicorn go out of bounds
+    if(unicorn.pos.y+16 > 82){
+        willUnicornMove = false
     }
     if(willUnicornMove){
         sTile()
@@ -153,13 +194,14 @@ onKeyPress("s", () => {
 });
 
 onKeyPress("d", () => {
-    // unicorn.moveTo(vec2(unicorn.pos.x+20,unicorn.pos.y))
     for(let i=unicornMovesCounter;i>=0;i--){
-        console.log("step "+ i + ":" + unicornPrevPositionsX[i] + " " +unicornPrevPositionsY[i])
         if(unicornPrevPositionsX[i] == unicorn.pos.x+16 && unicornPrevPositionsY[i]== unicorn.pos.y){
-            // tween(unicorn.pos, vec2(unicorn.pos.x, unicorn.pos.y), 0.2, (p) => unicorn.pos = p)
             willUnicornMove = false
         }
+    }
+    // if unicorn go out of bounds
+    if(unicorn.pos.x+16 > 96){
+        willUnicornMove = false
     }
     if(willUnicornMove){
         dTile()
