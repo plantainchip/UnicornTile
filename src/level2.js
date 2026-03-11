@@ -4,13 +4,14 @@ import "kaplay/global";
 export default function () {
 
     add([
-        sprite("4x4"),
-        pos(44, 17),
+        sprite("6x6"),
+        anchor("center"),
+        pos(width() / 2, 67),
     ])
 
     const unicorn = add([
         sprite("unicorn"),
-        pos(48, 66),
+        pos(112, 13),
         z(2),
         area({ shape: new Rect(vec2(2, 6), 10, 10), isSensor: true }),
         "unicorn"
@@ -22,34 +23,103 @@ export default function () {
 
     const star = add([
         sprite("star"),
-        pos(96, 21),
+        pos(112, 64),
         area({
-            shape: new Rect(vec2(6,6), 2, 2),
-            isSensor:true,
+            shape: new Rect(vec2(6, 6), 2, 2),
+            isSensor: true,
         }),
         z(1),
         "star"
+    ]);
+
+    const zap = add([
+        sprite("zap"),
+        pos(width()/2, 0),
+        anchor("bot"),
+        z(3),
+        "zap"
+    ]);
+
+    const hole1 = add([
+        sprite("whitetilehole"),
+        pos(112, 48),
+        area({ isSensor: true }),
+        "hole"
+    ])
+
+    const hole2 = add([
+        sprite("blacktilehole"),
+        pos(96, 48),
+        area({ isSensor: true }),
+        "hole"
+    ])
+
+    add([
+        sprite("whitetilehole"),
+        pos(96, 63),
+        area({ isSensor: true }),
+        "hole"
+    ])
+
+    const addball = add([
+        sprite("addball"),
+        pos(32, 80),
+        area({
+            shape: new Rect(vec2(3, 3), 8, 8),
+            isSensor: true,
+        }),
+        "addball"
+    ]);
+
+    const lightning = add([
+        sprite("lightning"),
+        pos(64, 80),
+        area({
+            shape: new Rect(vec2(3, 3), 8, 8),
+            isSensor: true,
+        }),
+        "addball"
     ]);
 
     const fly = add([
         sprite("fly"),
         pos(80, 21),
         area({
-            shape: new Rect(vec2(3,3), 8, 8),
-            isSensor:true,
+            shape: new Rect(vec2(3, 3), 8, 8),
+            isSensor: true,
         }),
         patrol({
-            waypoints:[
-                vec2(80,21),
-                vec2(80,38),
-                vec2(100,38),
+            waypoints: [
+                vec2(80, 13),
+                vec2(80, 34),
+                vec2(100, 32),
 
             ],
             speed: 8,
-            endBehavior:"ping-pong",
+            endBehavior: "ping-pong",
         }),
         z(1),
         "fly"
+    ]);
+
+    const fly2 = add([
+        sprite("fly"),
+        pos(32, 21),
+        area({
+            shape: new Rect(vec2(3, 3), 8, 8),
+            isSensor: true,
+        }),
+        patrol({
+            waypoints: [
+                vec2(32, 48),
+                vec2(88, 48),
+
+            ],
+            speed: 8,
+            endBehavior: "ping-pong",
+        }),
+        z(1),
+        "fly2"
     ]);
 
     function wTile() {
@@ -93,52 +163,49 @@ export default function () {
     // wasd tile counter
     const tileCounter = add([
         sprite("tile-hand"),
-        pos(48, 128),
+        pos(width() / 2, 144),
+        anchor("center"),
         area({ isSensor: true }),
         "tile-hand"
     ])
 
     // tile counters
-    let wCounter = 3
-    let aCounter = 0
-    let sCounter = 0
-    let dCounter = 3
 
     const wLabel = add([
-        text("3",{
+        text("2", {
             size: 16,
             font: "tiny5",
         }),
-        pos(56, 145),
-        color(43,40,41),
-        {value:3}
+        pos(53, 145),
+        color(43, 40, 41),
+        { value: 2 }
     ])
     const aLabel = add([
-        text("0",{
+        text("5", {
             size: 16,
             font: "tiny5",
         }),
-        pos(72, 145),
-        color(43,40,41),
-        {value:0}
+        pos(69, 145),
+        color(43, 40, 41),
+        { value: 5 }
     ])
     const sLabel = add([
-        text("0",{
+        text("5", {
             size: 16,
             font: "tiny5",
         }),
-        pos(88, 145),
-        color(43,40,41),
-        {value:0}
+        pos(85, 145),
+        color(43, 40, 41),
+        { value: 5 }
     ])
     const dLabel = add([
-        text("3",{
+        text("0", {
             size: 16,
             font: "tiny5",
         }),
-        pos(104, 145),
-        color(43,40,41),
-        {value:3}
+        pos(101, 145),
+        color(43, 40, 41),
+        { value: 0 }
     ])
 
     const rTileRestart = add([
@@ -162,12 +229,13 @@ export default function () {
                 willUnicornMove = false
             }
         }
+
         // if unicorn go out of bounds
-        if (unicorn.pos.y - 16 < 16) {
+        if (unicorn.pos.y - 16 < 13) {
             willUnicornMove = false
         }
         //if unicorn out of moves
-        if(wLabel.value == 0){
+        if (wLabel.value == 0) {
             willUnicornMove = false
         }
 
@@ -177,7 +245,7 @@ export default function () {
             unicornPrevPositionsX.push(unicorn.pos.x)
             unicornPrevPositionsY.push(unicorn.pos.y - 16)
             unicornMovesCounter += 1
-            wLabel.value-=1
+            wLabel.value -= 1
             wLabel.text = wLabel.value
         } else {
             tween(unicorn.pos, vec2(unicorn.pos.x, unicorn.pos.y), 0.2, (p) => unicorn.pos = p)
@@ -193,11 +261,11 @@ export default function () {
             }
         }
         // if unicorn go out of bounds
-        if (unicorn.pos.x - 16 < 48) {
+        if (unicorn.pos.x - 16 < 32) {
             willUnicornMove = false
         }
         //if unicorn out of moves
-        if(aLabel.value == 0){
+        if (aLabel.value == 0) {
             willUnicornMove = false
         }
 
@@ -207,8 +275,8 @@ export default function () {
             unicornPrevPositionsX.push(unicorn.pos.x - 16)
             unicornPrevPositionsY.push(unicorn.pos.y)
             unicornMovesCounter += 1
-            dLabel.value-=1
-            dLabel.text = dLabel.value
+            aLabel.value -= 1
+            aLabel.text = aLabel.value
         } else {
             tween(unicorn.pos, vec2(unicorn.pos.x, unicorn.pos.y), 0.2, (p) => unicorn.pos = p)
             shake(0.5)
@@ -222,12 +290,13 @@ export default function () {
                 willUnicornMove = false
             }
         }
+
         // if unicorn go out of bounds
-        if (unicorn.pos.y + 16 > 66) {
+        if (unicorn.pos.y + 16 > 93) {
             willUnicornMove = false
         }
         //if unicorn out of moves
-        if(sLabel.value == 0){
+        if (sLabel.value == 0) {
             willUnicornMove = false
         }
 
@@ -237,7 +306,7 @@ export default function () {
             unicornPrevPositionsX.push(unicorn.pos.x)
             unicornPrevPositionsY.push(unicorn.pos.y + 16)
             unicornMovesCounter += 1
-            sLabel.value-=1
+            sLabel.value -= 1
             sLabel.text = sLabel.value
         } else {
             tween(unicorn.pos, vec2(unicorn.pos.x, unicorn.pos.y), 0.2, (p) => unicorn.pos = p)
@@ -253,11 +322,11 @@ export default function () {
             }
         }
         // if unicorn go out of bounds
-        if (unicorn.pos.x + 16 > 96) {
+        if (unicorn.pos.x + 16 > 112) {
             willUnicornMove = false
         }
         //if unicorn out of moves
-        if(dLabel.value == 0){
+        if (dLabel.value == 0) {
             willUnicornMove = false
         }
 
@@ -267,7 +336,7 @@ export default function () {
             unicornPrevPositionsX.push(unicorn.pos.x + 16)
             unicornPrevPositionsY.push(unicorn.pos.y)
             unicornMovesCounter += 1
-            dLabel.value-=1
+            dLabel.value -= 1
             dLabel.text = dLabel.value
         } else {
             tween(unicorn.pos, vec2(unicorn.pos.x, unicorn.pos.y), 0.2, (p) => unicorn.pos = p)
@@ -282,19 +351,39 @@ export default function () {
         console.log(unicornMovesCounter)
     })
 
-    onKeyPress("r",()=>{
-        go("level1" );
+    onKeyPress("r", () => {
+        go("level2");
     })
-    onKeyPress("q",()=>{
-        go("levelselection" );
-    })
-
-    unicorn.onCollide("fly",()=>{
-        go("levelselection" );
+    onKeyPress("q", () => {
+        go("levelselection");
     })
 
-    unicorn.onCollide("star",()=>{
-        go("levelselection" );
+    unicorn.onCollide("addball",()=>{
+        dLabel.value = 5
+        dLabel.text = dLabel.value
+    })
+
+    unicorn.onCollide("fly", () => {
+        tween(zap.pos, vec2(width()/2+18, height()/2), 1, (p) => zap.pos = p)
+        shake(12)
+        wait(2, () => {
+            go("level2");
+        })
+        
+    })
+
+    unicorn.onCollide("star", () => {
+        wait(2, () => {
+            go("levelselection");
+        })
+    })
+
+    unicorn.onCollide("hole", () => {
+        tween(zap.pos, vec2(width()/2+18, height()/2), 1, (p) => zap.pos = p)
+        shake(12)
+        wait(2, () => {
+            go("level2");
+        })
     })
 
 
